@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>電話帳アプリを開く</title>
+</head>
+<body>
+    <h1>電話帳アプリを開く</h1>
+    <p>下記のボタンをクリックして、電話帳アプリを開いてください。</p>
+
+    <!-- iOS用リンク -->
+    <a href="ios-contact://" id="iosLink">iOSの連絡先を開く</a>
+
+    <!-- Android用リンク -->
+    <a href="intent://contacts/#Intent;scheme=content;package=com.android.contacts;end" id="androidLink">Androidの連絡先を開く</a>
+
+    <script>
+        // デバイスに応じてリンクを表示
+        if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            document.getElementById('androidLink').style.display = 'none'; // Androidリンクを非表示
+        } else {
+            document.getElementById('iosLink').style.display = 'none'; // iOSリンクを非表示
+        }
+    </script>
+
+    <script>
+        // 連絡先登録用の関数を定義
+        function addContact() {
+            const contact = {
+                name: "電気ガス水道の窓口【ｸﾗｳﾄﾞﾘﾝｸｽ】",
+                phone: "0120540987"
+            };
+
+            // vCard形式の文字列を生成
+            const vCard = `BEGIN:VCARD
+VERSION:3.0
+FN:${contact.name}
+TEL;TYPE=CELL:${contact.phone}
+END:VCARD`;
+
+            // vCardをBlobとして生成
+            const blob = new Blob([vCard], { type: 'text/vcard' });
+            const url = URL.createObjectURL(blob);
+
+            // ダウンロードリンクを作成
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${contact.name}.vcf`; // ダウンロードするファイル名
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url); // メモリを解放
+        }
+    </script>
+
+    <button onclick="addContact()">電話帳に登録</button>
+</body>
+</html>
